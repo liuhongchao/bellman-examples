@@ -49,21 +49,20 @@ pub struct MultiplyDemo<E: Engine> {
 /// synthesize the constraint system.
 impl <E: Engine> Circuit<E> for MultiplyDemo<E> {
     fn synthesize<CS: ConstraintSystem<E>>(
-        self, 
+        self,
         cs: &mut CS
     ) -> Result<(), SynthesisError>
     {
-        
         // Allocate the first value (private)
         let a = cs.alloc(|| "a", || {
             self.a.ok_or(SynthesisError::AssignmentMissing)
         })?;
-        
+
         // Allocate the second value (private)
         let b = cs.alloc(|| "b", || {
             self.b.ok_or(SynthesisError::AssignmentMissing)
         })?;
-        
+
         // Allocate the third value (public)
         // allocating a public input uses alloc_input
         let c = cs.alloc_input(|| "c", || {
@@ -77,7 +76,7 @@ impl <E: Engine> Circuit<E> for MultiplyDemo<E> {
             |lc| lc + b,
             |lc| lc + c
         );
-        
+
         Ok(())
     }
 }
@@ -87,9 +86,9 @@ fn test_multiply(){
     // This may not be cryptographically safe, use
     // `OsRng` (for example) in production software.
     let rng = &mut thread_rng();
-    
+
     println!("Creating parameters...");
-    
+
     // Create parameters for our circuit
     let params = {
         let c = MultiplyDemo::<Bls12> {
@@ -102,14 +101,14 @@ fn test_multiply(){
 
         generate_random_parameters(c, rng).unwrap()
     };
-    
+
     // Prepare the verification key (for proof verification)
     let pvk = prepare_verifying_key(&params.vk);
 
     println!("Creating proofs...");
-    
+
     let public_input = Fr::from_str("21");
-    
+
     // Create an instance of circuit
     let c = MultiplyDemo::<Bls12> {
         a: Fr::from_str("7"),
@@ -117,10 +116,10 @@ fn test_multiply(){
         b: Fr::from_str("3"),
         c: public_input
     };
-    
+
     // Create a groth16 proof with our parameters.
     let proof = create_random_proof(c, &params, rng).unwrap();
-    
+
     assert!(verify_proof(
         &pvk,
         &proof,
