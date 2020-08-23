@@ -9,6 +9,7 @@ use ff::{Field, PrimeField};
 use pairing::Engine;
 
 mod cube;
+mod sha256;
 
 fn main(){
     use pairing::bls12_381::{Bls12, Fr};
@@ -16,6 +17,8 @@ fn main(){
     use bellman::groth16::{
         create_random_proof, generate_random_parameters, prepare_verifying_key, verify_proof, Proof,
     };
+
+    use sha256::sha256_demo;
 
     println!("Prove that I know x such that x^3 + x + 5 == 35.");
 
@@ -50,4 +53,8 @@ fn main(){
         &proof,
         &[Fr::from_str("35").unwrap()]
     ).unwrap());
+
+    println!("start sha256 demo...");
+    sha256_demo();
+    println!("done sha256 demo...");
 }

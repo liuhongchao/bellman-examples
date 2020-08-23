@@ -5,12 +5,15 @@ license = "MIT/Apache-2.0"
 name = "bellman-tutorial"
 version = "0.1.0"
 
+edition = "2018"
+
 [dependencies]
 rand = "0.7"
 rand_core = "0.5"
 bit-vec = "0.4.4"
 byteorder = "1"
-pairing = "0.16"
+sha2 = "0.9.1"
+pairing = { version = "0.16", path = "../pairing" }
 group = "0.6"
-ff = "0.6"
-bellman = "0.6.0"
+ff = { version = "0.6", path = "../ff" }
+bellman = { version = "0.6.0", path = "../bellman" }

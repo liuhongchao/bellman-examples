@@ -22,6 +22,7 @@ use self::pairing::bls12_381::{
 // We'll use these interfaces to construct our circuit.
 use self::bellman::{
     Circuit,
+    Variable,
     ConstraintSystem,
     SynthesisError
 };
@@ -55,17 +56,17 @@ impl <E: Engine> Circuit<E> for CubeDemo<E> {
         // Resulting R1CS with w = [one, x, tmp_1, y, tmp_2, out]
 
         // Allocate the first private "auxiliary" variable
-        let x_val = self.x;
-        let x = cs.alloc(|| "x", || {
+        let x_val: Option<E::Fr> = self.x;
+        let x: Variable = cs.alloc(|| "x", || {
             x_val.ok_or(SynthesisError::AssignmentMissing)
         })?;
 
         // Allocate: x * x = tmp_1
-        let tmp_1_val = x_val.map(|mut e| {
+        let tmp_1_val: Option<E::Fr> = x_val.map(|mut e| {
             e.square();
             e
         });
-        let tmp_1 = cs.alloc(|| "tmp_1", || {
+        let tmp_1: Variable = cs.alloc(|| "tmp_1", || {
             tmp_1_val.ok_or(SynthesisError::AssignmentMissing)
         })?;
         // Enforce: x * x = tmp_1
@@ -136,6 +137,7 @@ fn test_cube_proof(){
 
         generate_random_parameters(c, rng).unwrap()
     };
+
 
     // Prepare the verification key (for proof verification)
     let pvk = prepare_verifying_key(&params.vk);
